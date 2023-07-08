@@ -13,6 +13,7 @@ public class BossFightManager : MonoBehaviour
     private float currentDamage = 0;
 
     private int _buttonPressCount = 0;
+    public int ButtonPressCount { get { return _buttonPressCount; } set { _buttonPressCount = value; } }
 
     [SerializeField]
     private float _timeLeft;

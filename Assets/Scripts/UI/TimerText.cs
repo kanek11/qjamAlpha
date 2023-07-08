@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class TimeText : MonoBehaviour
+public class TimerText : MonoBehaviour
 {
 
     private GameManager _gameManager;
