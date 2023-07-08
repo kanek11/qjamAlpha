@@ -34,7 +34,7 @@ public class BossFightManager : MonoBehaviour
     {
         //if time is up, game over
         _timeLeft -= Time.deltaTime; 
-        if (_timeLeft <= 0)
+        if (_timeLeft <= 0 || Enemy.GetComponent<EnemyHealth>().Health <= 0)
         {
             GameOver();
         }

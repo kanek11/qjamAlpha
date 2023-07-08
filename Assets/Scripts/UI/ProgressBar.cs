@@ -34,6 +34,16 @@ public class ProgressBar : MonoBehaviour
     public void SetProgressBar()
     {
         _progress = 1 - target.GetComponent<EnemyHealth>().Health / target.GetComponent<EnemyHealth>().MaxHealth;
+        if(_progress < 0)
+        {
+            _progress = 0;
+            Debug.Log("ProgressBar: Progress is below 0!");
+        }
+        if(_progress > 1)
+        {
+            _progress = 1;
+            Debug.Log("ProgressBar: Progress is over 1!");
+        }
         slider.value = _progress;
 
         Debug.Log("ProgressBar: Progress changed: " + _progress);
