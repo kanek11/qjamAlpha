@@ -103,6 +103,13 @@ public class MainMenuButtonController : MonoBehaviour
 
 
 
+    public void OnExitClicked()
+
+    {
+        //end the application
+        Application.Quit();
+    }
+
 
 
 }
