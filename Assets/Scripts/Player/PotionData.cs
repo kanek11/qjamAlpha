@@ -11,10 +11,15 @@ public class PotionData : MonoBehaviour
 
 
     //R,G,B values of the potion.
-    private Dictionary<Attributes, int> _potionAttributes = new Dictionary<Attributes, int>();
-    public Dictionary<Attributes, int> PotionAttributes { get { return _potionAttributes; } set { _potionAttributes = value; } }
+    //set public to be queried by the boss fight script
+    private Dictionary<Attributes, int> _potionAttributes = new Dictionary<Attributes, int>(); 
+    public Dictionary<Attributes, int> PotionAttributes
+    {
+        get { return _potionAttributes; }
+    }
+
    
-    private Potion Potion;
+    private Potion _potion;
 
     void Awake()
     {
@@ -32,32 +37,38 @@ public class PotionData : MonoBehaviour
 
     void Start()
     {
-     
+
         //register to the potion update event
-        Potion = GameObject.Find("Player").transform.Find("PlayerInventory").transform.Find("Potion").GetComponent<Potion>();
-        if(Potion == null)
+        _potion = GameObject.Find("Player/PlayerInventory/Potion").GetComponent<Potion>();
+        if (_potion == null)
         {
             Debug.Log("Original Potion not found!");
+            //initialize as zeros
+            _potionAttributes.Add(Attributes.R, 10);
+            _potionAttributes.Add(Attributes.G, 10);
+            _potionAttributes.Add(Attributes.B, 10);
+
+            Debug.Log("PotionData: Potion initialized without player " + "R: " + _potionAttributes[Attributes.R] + "G: " + _potionAttributes[Attributes.G] + "B: " + _potionAttributes[Attributes.B]);
+
         }
         else
-        Potion.OnPotionUpdate.AddListener(UpdatePotionData);
-
-        //initialize as zeros
-        _potionAttributes.Add(Attributes.R, 10);
-        _potionAttributes.Add(Attributes.G, 10);
-        _potionAttributes.Add(Attributes.B, 10);
-
-        Debug.Log("PotionData: Potion initialized " + "R: " + _potionAttributes[Attributes.R] + "G: " + _potionAttributes[Attributes.G] + "B: " + _potionAttributes[Attributes.B]);
-         
+        {
+            _potion.OnPotionUpdate.AddListener(UpdatePotionData);
+            _potionAttributes.Add(Attributes.R, _potion.PotionAttributes[Attributes.R]);
+            _potionAttributes.Add(Attributes.G, _potion.PotionAttributes[Attributes.G]);
+            _potionAttributes.Add(Attributes.B, _potion.PotionAttributes[Attributes.B]);
+             
+        }
 
     }
 
     void UpdatePotionData()
     {
         //update the potion data by copying data ,  not copy reference
-        _potionAttributes[Attributes.R] = Potion.PotionAttributes[Attributes.R];
-        _potionAttributes[Attributes.G] = Potion.PotionAttributes[Attributes.G];
-        _potionAttributes[Attributes.B] = Potion.PotionAttributes[Attributes.B];
+        _potionAttributes[Attributes.R] = _potion.PotionAttributes[Attributes.R];
+        _potionAttributes[Attributes.G] = _potion.PotionAttributes[Attributes.G];
+        _potionAttributes[Attributes.B] = _potion.PotionAttributes[Attributes.B];
+
     }
 
 

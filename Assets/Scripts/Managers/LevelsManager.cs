@@ -5,48 +5,74 @@ using TMPro.Examples;
 using UnityEngine;
 
 //read me:
+//level Manager is responsible for loading the level data, and set up the level.
 
-//[] open for rewrite
 
-//LevelsManager.ReadLevelsData() returns a dictionary of level number and level data
+
+//API:
+//Awake: 
+//.ReadLevelsData()      intialize the dictionary of level number and level data
 
 //the csv files are in a folder "LevelsData" in the Resources folder, read as TextAsset
 //the names are "Level_1", "Level_2", etc. 
 
+//.SetLevel(int levelNumber)    set up the level, called by GameManager
 
-public class LevelsManager : MonoBehaviour
+
+
+
+//bug history:
+
+// SetLevel depend on the LevelsData,  means they must be called in specific order, in same script for clarity.
+// donot introduce ambiguous order,  such as,  make them both Awake() in separate scripts.  
+
+// the practice is to make the logic a function, instead of in awake or start.
+// and call it somewhere in specified order.
+
+
+//the setuplevel function is also responsible for prepare the player and camera,  as they are part of the level.
+//it was confusing that it seems we should put playerprefab in the player manager.
+//turns out logic is clearer when we reduce mono behavior scripts, to avoid awake or start order issues.
+//as member we 
+
+public class LevelsManager  : MonoBehaviour
 {
 
     //path to the levels data file
     //[forNow] only one level in csv file, a 2D array.
-    private const string LEVELS_DATA_PATH = "LevelsData";
-
+    private const string LEVELS_DATA_PATH = "LevelsData"; 
 
 
     //======to be initialized.
 
     //data required to set up a level
-    private Dictionary<int, LevelsData.LevelData> _levelsData; 
+    private Dictionary<int, LevelsData.LevelData> _levelsData;
+
+      
+    //=========dependencies
+    //the managers 
+    private TilemapManager _tilemapManager; 
 
 
-    //====the managers
-    private TilemapManager _tilemapManager;
+    [SerializeField]
     private PlayerManager _playerManager;
+    public PlayerManager PlayerManager { get { return _playerManager; } set { _playerManager = value; } }
+     
+    //
+    [SerializeField]
+    private GameObject _playerPrefab;
+    public GameObject PlayerPrefab { get { return _playerPrefab; } set { _playerPrefab = value; } }
+ 
+
 
     //caution: retrieve the camera after the scene is loaded.
     private CameraController _cameraController;
-
-
-    void Awake()
-    {
-        //get the tilemap manager component
-        _tilemapManager = this.GetComponent<TilemapManager>();
-        _playerManager = this.GetComponent<PlayerManager>();
-
-    }
+ 
      
-
-    //on start, read the levels data
+    private void Awake()
+    { 
+        _tilemapManager = this.GetComponent<TilemapManager>();
+    } 
     private void Start()
     { 
     } 
@@ -54,12 +80,11 @@ public class LevelsManager : MonoBehaviour
 
     //[alpha]
     //a public method to load the levels data , called as the game starts 
-    public Dictionary<int , LevelsData.LevelData> ReadLevelsData()
+    public void ReadLevelsData()
     {
 
         //the dictionary to hold the levels data
-        Dictionary<int, LevelsData.LevelData> levelsData = new Dictionary<int, LevelsData.LevelData>();
-
+        _levelsData = new Dictionary<int, LevelsData.LevelData>();
 
         TextAsset[] mapFiles = Resources.LoadAll<TextAsset>("LevelsData");
 
@@ -103,11 +128,10 @@ public class LevelsManager : MonoBehaviour
             levelData.map = map;
 
             //add the level data to the dictionary
-            levelsData.Add(levelNumber, levelData);
+            _levelsData.Add(levelNumber, levelData);
 
         }
-
-        return levelsData;  
+         
 
     }
      
@@ -115,21 +139,20 @@ public class LevelsManager : MonoBehaviour
     //set up the level by level number
     //awake, ready the level before any Start() is called.
     public void SetupLevel(int levelNumber)
-    {
-        //read the levels data
-        _levelsData = ReadLevelsData();
-
+    { 
         //get the level data by level number
         LevelsData.LevelData levelData = _levelsData[levelNumber];
 
-      
-        _tilemapManager.ReadTilemapPrefabs();
-
-        _tilemapManager.SetupTilemap(levelData);  
+       
+        _tilemapManager.SetupTilemap(levelData);
 
 
-        /*  //set up the player
-          _playerManager.SetupPlayer();
+        _playerManager.PlayerSpawnPoint = _tilemapManager.PlayerSpawnPoint;
+        _playerManager.PlayerInstance = Instantiate(_playerPrefab, _tilemapManager.PlayerSpawnPoint, Quaternion.identity);
+        _playerManager.SetupPlayer();
+
+
+        /*   
 
           //set up the enemies
           _enemiesManager.SetupEnemies();

@@ -16,7 +16,7 @@ using UnityEngine.UIElements;
 public class PlayerManager  
 {
 
-     public Vector2 SpawnPoint;
+     public Vector2 PlayerSpawnPoint;
 
      private PlayerMovement _playerMovement;
 
@@ -31,7 +31,7 @@ public class PlayerManager
 
      public void ResetPlayer()
      {
-        PlayerInstance.transform.position = SpawnPoint;
+        PlayerInstance.transform.position = PlayerSpawnPoint;
      }
 
     public void EnablePlayerControl()

@@ -11,14 +11,17 @@ public class Potion : MonoBehaviour
 
     public UnityEvent OnPotionUpdate;
 
-    void Start()
+    void Awake()
     {
-       //initialize as zeros
+       //initialize  
        _potionAttributes.Add(Attributes.R, 10);
        _potionAttributes.Add(Attributes.G, 10);
        _potionAttributes.Add(Attributes.B, 10);
 
     }
+
+    void Start()
+    { }
 
 
     public void Use(Item item)

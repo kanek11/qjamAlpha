@@ -2,44 +2,48 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TilemapManager : MonoBehaviour
+
+//readme:
+//TilemapManager is responsible for the tilemap stuff
+//load prefabs, store the data in the dictionary.
+//setup the map by the data from the level manager.  and set the data matrix as current level data.
+
+
+//caution : load the prefabs before using them.
+//as always, the calling order should be managed by one script,  instead of use Awake() blindly.
+
+
+//bug history:
+//when the tile is not found, or when the tile is spawn,  specify the tile as background tile. 
+
+
+
+public class TilemapManager  : MonoBehaviour
 {
 
     //the data that hold all prefabs assets
     private Dictionary<int, TilemapPrefab> _tilemapPrefabsData;
-     
-    //dependencies
-    [SerializeField]
-    private GameObject _playerPrefab; 
-    public GameObject PlayerPrefab { get { return _playerPrefab; }  set { _playerPrefab = value; } }
-    
-    [SerializeField]
-    private PlayerManager _playerManager;
-    public PlayerManager PlayerManager { get { return _playerManager; } set { _playerManager = value; } }
 
-
+    public Vector2 PlayerSpawnPoint; 
 
 
     //===data for current tilemap
     private LevelsData.LevelData _currentLevelData;
-    public LevelsData.LevelData CurrentLevelData { get { return _currentLevelData; } }   
+    public LevelsData.LevelData CurrentLevelData { get { return _currentLevelData; } } 
+    
     public int CurrentLevelNumber { get { return _currentLevelData.number; } }
     public int CurrentMapWidth { get { return _currentLevelData.map.GetLength(0); } }
     public int CurrentMapHeight { get { return _currentLevelData.map.GetLength(1); } }
 
 
-    public Vector2 PlayerSpawnPoint;
-
-
     void Awake()
-    {
-       
+    { 
     }
 
     void Start()
-     { 
-
+    { 
     }
+     
 
     public void ReadTilemapPrefabs()
     {
@@ -101,8 +105,7 @@ public class TilemapManager : MonoBehaviour
         //====draw background 
         //GameObject Grass = Instantiate(GetTilemapPrefabById(0), new Vector2(0, 0), Quaternion.identity, this.transform).gameObject; 
 
- 
-
+  
         //0 is row of matrix
 
         for (int x = 0; x < map.GetLength(0); x++)
@@ -117,10 +120,8 @@ public class TilemapManager : MonoBehaviour
                 }
                 else if(map[x,y] == -1)
                 {
-                    _playerManager.SpawnPoint = new Vector2(x, y);
-                    _playerManager.PlayerInstance = Instantiate(_playerPrefab, _playerManager.SpawnPoint, Quaternion.identity);
-                    _playerManager.SetupPlayer();
-                    Debug.Log("Player spawn point: " + _playerManager.SpawnPoint);
+                    PlayerSpawnPoint = new Vector2(x, y); 
+                    Debug.Log("Player spawn point: " + PlayerSpawnPoint);
 
                     //set to 0 for the tilemap as normal background;
                     map[x, y] = 0;
@@ -130,13 +131,17 @@ public class TilemapManager : MonoBehaviour
                 TilemapPrefab prefab = GetTilemapPrefabById(map[x,y]);
                 if (prefab == null)
                 {
-                    Debug.Log("Tilemap prefab not found for id " + map[x,y]);
+                    Debug.Log("Tilemap prefab not found for id " + map[x, y] + "set as background") ;
+                    map[x, y] = 0;
                     continue;
                 }
 
-                // Instantiate at its position, the tiles are assumed 1x1 unit in size
-                Vector2 position = new Vector2(x,y);
-                Instantiate(prefab, position, Quaternion.identity, this.transform);
+                Vector3 position = new Vector3(x, y, 0); // The z-value is typically 0 in 2D games
+                GameObject prefabGameObject = prefab.gameObject;
+                Instantiate(prefabGameObject, position, Quaternion.identity);
+
+
+
             }
         }
 

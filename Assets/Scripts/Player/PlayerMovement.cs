@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 
@@ -13,14 +14,15 @@ using UnityEngine;
 //assume the tilemap is a 1x1 unit grid . 
 
 //the last input direction is the moving direction.
-//when start moving, the player won't respond to input until it reaches the destination.
+//when start moving, the player won't respond until it reaches the destination.
+ 
 
-//always keep the player position as integer. if increment to a float near the destination, round it to integer.
+ 
+//bug history:
+//don't compare with destination directly,  because of numerical precision, compare is not reliable. use < and snap to destination instead.
+//within a single frame,  the snap is not so noticeable but might need to be improved in the future.
 
-
-//the player has a kinetic rigidbody . 
-//the kinetic information can be queried by the rigidbody component. such as velocity.
-
+ 
 
 
 
@@ -28,20 +30,20 @@ public class PlayerMovement : MonoBehaviour
 
 {
 
+    //====properties
     [SerializeField]
-    //properties
     private float _movingSpeed = 4f;
     public float MovingSpeed { get { return _movingSpeed; } set { _movingSpeed = value; } }
 
+
+    //control variables might needed for player movement;
+    private float _elapsedTime = 0f; 
+    private bool _isMoving = false;  
+
+    Vector2 _targetPosition = Vector2.zero;
+    private int _movingTiles = 0;
     private Vector2 _movingDirection = Vector2.zero;
 
-
-    //====states
-    private bool _isMoving = false; 
-
-
-    //-components
-    private Rigidbody2D _rigidbody2D;
 
     //--dependencies
     //the Tilemapmangerto get the map prefab.
@@ -50,11 +52,7 @@ public class PlayerMovement : MonoBehaviour
 
 
     private void Awake()
-    {
-       
-
-        _rigidbody2D = GetComponent<Rigidbody2D>();
-
+    { 
         _tilemapManager = GameObject.Find("GameManager").GetComponent<TilemapManager>();
 
     }
@@ -70,24 +68,58 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-    
         if (!_isMoving)
         {
             ProcessInput();
 
-            if (_movingDirection != Vector2.zero)
+            if (_movingDirection != Vector2.zero && isWalkableTile(_movingDirection))
             {
-                //Debug.Log("start moving in direction " + _movingDirection + "with speed " + _movingSpeed);
 
-                //start moving, the coroutine will update the rigidbody in each frame until it reaches the destination.
-                StartCoroutine(MoveToDestination());
+                _isMoving = true;  
+                _movingTiles = 1; 
+                _targetPosition = (Vector2)transform.position + _movingDirection; 
+                _elapsedTime = 0;
+ 
+            }
+             
+        }
+
+        if(_isMoving)
+        {
+
+            //in each frame update, move a little bit towards the destination.  return end for the current update.
+            if ( (_elapsedTime + Time.deltaTime) < (_movingTiles / _movingSpeed) )
+            {
+                _elapsedTime += Time.deltaTime;
+
+                transform.position += (Vector3)_movingDirection * _movingSpeed * Time.deltaTime;
 
             }
+            //if still holding the button,  keep moving.
+            else if ( isWalkableTile(_movingDirection)  && (Input.GetButton("Horizontal") || Input.GetButton("Vertical")) )
+            {
+                //update and keep moving
+                _movingTiles++;
+                _targetPosition += _movingDirection;
+
+            }
+            else
+            {
+                transform.position = _targetPosition;
+                _isMoving = false;
+                _elapsedTime = 0;
+                _movingTiles = 0;
+                _movingDirection = Vector2.zero; 
+            }
+
         }
+
+ 
 
 
     }
+ 
+ 
 
     private void ProcessInput()
     {
@@ -119,8 +151,7 @@ public class PlayerMovement : MonoBehaviour
                 _movingDirection = new Vector2(Input.GetAxisRaw("Horizontal"), 0);
             }
             else
-            {
-                
+            { 
                 _movingDirection = new Vector2(0, Input.GetAxisRaw("Vertical"));
             }
 
@@ -129,17 +160,19 @@ public class PlayerMovement : MonoBehaviour
 
     }
 
+  
 
-    IEnumerator MoveToDestination()
-    {
+    bool isWalkableTile(Vector2 Direction)
+
+    { 
         //======test if the destination is valid
 
-        Vector2 targetPosition = (Vector2)transform.position + _movingDirection;
+        Vector2 targetPosition = _targetPosition + Direction;
         if (targetPosition.x < 0 || targetPosition.x >= _tilemapManager.CurrentMapWidth || targetPosition.y < 0 || targetPosition.y >= _tilemapManager.CurrentMapHeight)
         {
             Debug.Log("destination out of bound");
             _movingDirection = Vector2.zero;
-            yield break;
+            return false;
         }
 
         else
@@ -150,49 +183,14 @@ public class PlayerMovement : MonoBehaviour
             {
                 Debug.Log("destination is not walkable");
                 _movingDirection = Vector2.zero;
-                yield break;
+                return false;
             }
 
         }
 
-        //========ok to move now
+        return true;
+         
+    }
 
-
-        _isMoving = true;
-
-        float elapsedTime = 0; 
-
-        //in each frame update, move a little bit towards the destination.  return end for the current update.
-        while(elapsedTime < 1/ _movingSpeed)
-        {
-            elapsedTime += Time.deltaTime;
  
-            Move();
-
-            yield return null;
-        }
-
-        //===end the movement 
-        //set the position to the destination by transform.
-        transform.position = targetPosition;
-        _isMoving = false;
-        _movingDirection = Vector2.zero;
-        //Debug.Log("end moving");
-
-    }
-
-
-
-    private void Move()
-    {
-        
-        Vector2 movement =  _movingSpeed  * _movingDirection * Time.deltaTime;
-
-        // Apply this movement to the position
-        transform.position += (Vector3)movement;
-
-
-    }
-
-
 }
