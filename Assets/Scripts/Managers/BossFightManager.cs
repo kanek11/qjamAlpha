@@ -1,56 +1,140 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+
+
+
+
+enum Rating { F, E, D, C, B, A, S, SS };
+
+
 
 public class BossFightManager : MonoBehaviour
 {
-
-    public GameObject Player;
-    public GameObject Enemy;
-
     
-    private float initialDamage = 0;
-    private float currentDamage = 0;
+    public Sprite[] ScoreSprites;
+    public Image ScoreImage;
+     
+    public GameObject[] EnemyPrefabs;
+    
+    private GameObject _currentEnemy;
+    public GameObject CurrentEnemy { get { return _currentEnemy; } set { _currentEnemy = value; } }
 
+    public Image EnemyImage; 
+
+
+    private AudioSource[] _audioSources;
+     
+
+    public Dictionary<Attributes, int> Potion;
+
+
+    private float _initialDamage = 0;
+
+    private float _currentDamage = 0;
+    public float CurrentDamage { get { return _currentDamage; } set { _currentDamage = value; } }
+
+
+    //for UI
     private int _buttonPressCount = 0;
     public int ButtonPressCount { get { return _buttonPressCount; } set { _buttonPressCount = value; } }
 
+
+
     [SerializeField]
-    private float _timeLeft;
-    public float TimeLimit { get { return _timeLeft; } set { _timeLeft = value; } }
+    private float _timeLimit;
+    public float TimeLimit { get { return _timeLimit; } set { _timeLimit = value; } }
+
+    private float _elapsedTime = 0;
+    public float ElapsedTime { get { return _elapsedTime; } set { _elapsedTime = value; } }
+
+
+
+    private bool _hasReachedTimeLimit = false;
+
+
+
+
+
 
     // Start is called before the first frame update
-    void Start()
-    {
-        Player = GameObject.Find("Player");
-        Enemy = GameObject.Find("Enemy");
+    void Awake()
+    { 
+        if(GlobalState.EnemyIndex >= EnemyPrefabs.Length)
+        {
+            Debug.Log("Bossfight: _currentEnemy index out of range, reset to 0");
+            GlobalState.EnemyIndex = 0;
+        }
+        if( EnemyPrefabs.Length == 0)
+        {
+            Debug.Log("Bossfight: EnemyPrefabs is empty");
+        }
 
-        
-        CalculateDamage();
+        _currentEnemy = EnemyPrefabs[GlobalState.EnemyIndex]; 
+        Debug.Log("Bossfight: _currentEnemy index: " + GlobalState.EnemyIndex);
+
+        //set the Image of the enemy
+        if(EnemyImage == null) 
+            Debug.Log("Bossfight: EnemyImage is null");
+
+        EnemyImage.sprite = _currentEnemy.GetComponent<SpriteRenderer>().sprite;
+
+       
+
+        //get from the players - inventory - potion.potion. Attributes.RGB
+        Potion = GlobalState.PotionAttributes; 
+
+        //for debugging, if potion has length 0, initialize it
+       
+        if (Potion.Count == 0)
+        {
+            Debug.Log("Bossfight: Potion is not set, initialized");
+            Potion.Add(Attributes.R, 500);
+            Potion.Add(Attributes.G, 500);
+            Potion.Add(Attributes.B, 500);
+        } 
+
+
+
+        _audioSources = GetComponents<AudioSource>();
         
     }
+
+
+    void Start()
+    {
+        CalculateDamage();
+    }
+     
 
     // Update is called once per frame
     void Update()
     {
-        //if time is up, game over
-        _timeLeft -= Time.deltaTime; 
-        if (_timeLeft <= 0 || Enemy.GetComponent<EnemyHealth>().Health <= 0)
+        if(_hasReachedTimeLimit)
         {
-            GameOver();
+            return;
+        }
+
+        //if time is up, game over
+        _elapsedTime += Time.deltaTime; 
+        if (_elapsedTime >= _timeLimit)
+        {
+            RateScore();
+            _hasReachedTimeLimit = true;
         }
          
         //if input enter, increment buttonPressCount
         if (Input.GetKeyDown(KeyCode.Return))
         { 
             _buttonPressCount++;
-            float Damage = initialDamage * (0.8f + _buttonPressCount * 0.02f);
-            Enemy.GetComponent<EnemyHealth>().SetEnemyHealth(Damage);
+            _currentDamage = _initialDamage * (0.8f + _buttonPressCount * 0.02f);
+            _currentEnemy.GetComponent<EnemyHealth>().SetEnemyHealth(_currentDamage);
 
 
             Debug.Log("BossFight: button pressed, count:" + _buttonPressCount);
         }
-        
 
 
     }
@@ -58,11 +142,8 @@ public class BossFightManager : MonoBehaviour
 
     void CalculateDamage()
     {
-        Attributes enemyAttribute = Enemy.GetComponent<Enemy>().EnemyAttribute;
 
-        //get from the players - inventory - potion.potion. Attributes.RGB
-        Dictionary<Attributes, int> potion = GameObject.Find("PotionData").GetComponent<PotionData>().PotionAttributes;
-
+        Attributes enemyAttribute = _currentEnemy.GetComponent<Enemy>().EnemyAttribute;
 
         Attributes weakness = (Attributes) ( ( (int)enemyAttribute -1 +3 ) % 3 );  //prevent negative
         Attributes neutral = (Attributes) ( ( (int)enemyAttribute + 1) % 3 );
@@ -71,22 +152,99 @@ public class BossFightManager : MonoBehaviour
         Debug.Log("Bossfight: weakness: " + weakness + " neutral: " + neutral + " strength: " + strength);
 
 
-        initialDamage = potion[Attributes.B] * 2 + potion[neutral] - potion[strength];
-        currentDamage = initialDamage * 0.8f;
-        Enemy.GetComponent<EnemyHealth>().SetEnemyHealth(currentDamage);
+        _initialDamage = Potion[Attributes.B] * 2 + Potion[neutral] - Potion[strength];
+        _currentDamage = _initialDamage * 0.8f;
+        _currentEnemy.GetComponent<EnemyHealth>().SetEnemyHealth(_currentDamage);
 
-        Debug.Log("Bossfight: initial damage: " + currentDamage);
+        Debug.Log("Bossfight: initial damage: " + _currentDamage);
 
 
     }
 
 
+
+    void RateScore()
+    {
+        //set the fightCanvas to be invisible
+        CanvasGroup FightCanvasGroup =  GameObject.Find("FightCanvas").GetComponent<CanvasGroup>();
+        FightCanvasGroup.alpha = 0;
+        FightCanvasGroup.interactable = false;
+        FightCanvasGroup.blocksRaycasts = false;
+
+
+        CanvasGroup RateScoreCanvasGroup = GameObject.Find("RateScoreCanvas").GetComponent<CanvasGroup>();
+        RateScoreCanvasGroup.alpha = 1;
+        RateScoreCanvasGroup.interactable = true;
+        RateScoreCanvasGroup.blocksRaycasts = true;
+
+
+
+        //calculate score based on current damage and the health of the enemy
+        //the rating is SS, S, ABC, F , total 0-5,  5 for the best, 0 for the worst
+        //for every 100 above the enemy health, add 1 to the rating
+
+        Rating rating = Rating.F;
+
+         float enemyHealth = _currentEnemy.GetComponent<EnemyHealth>().Health;
+         
+        //if success
+
+        if (enemyHealth <= 0)
+        {
+            // Calculate the rating based on excess damage, clamp it within the valid range.
+            int excessDamage = Mathf.Clamp((int)(_currentDamage - enemyHealth) / 100, 0, 7);
+            rating = (Rating)excessDamage;
+
+            //set the score image
+           
+
+        }
+
+        ScoreImage.sprite = ScoreSprites[(int)rating];
+
+        StartCoroutine(RateScoreAfter());
+
+        //======play the audio.
+        _audioSources[0].Stop();
+
+        //Switch case: play 1 if rating is F, 1 if rating is E, D, 2 if A,B,C, 3 if rating is S or SS
+        switch (rating)
+        {
+            case Rating.F:
+            case Rating.E:
+            case Rating.D:
+                _audioSources[1].Play();
+                break;
+            case Rating.C:
+            case Rating.B:
+            case Rating.A:
+                _audioSources[2].Play();
+                break;
+            case Rating.S:
+            case Rating.SS:
+                _audioSources[3].Play();
+                break;
+        }
+
+
+         
+
+    }
+        
+
+    private IEnumerator RateScoreAfter()
+    {
+        yield return new WaitForSeconds(5);
+
+        GameOver();
+    }
+ 
+
+
     void GameOver()
     {
-
-        UnityEditor.EditorApplication.isPlaying = false;
-
-
+        GlobalState.Reset();
+        SceneManager.LoadScene("Title");  
     }
 
 

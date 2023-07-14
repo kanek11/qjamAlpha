@@ -25,7 +25,7 @@ public class EnemyHealth : MonoBehaviour
         _health = _maxHealth - health;
         OnHealthChanged?.Invoke(); 
 
-        Debug.Log("Enemy health: health changed, current: " + _health);
+        Debug.Log("_currentEnemy health: health changed, current: " + _health);
     }
      
 

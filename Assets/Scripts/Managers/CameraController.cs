@@ -42,7 +42,7 @@ public class CameraController : MonoBehaviour
         _target = player.transform;
         if (player == null)
         {
-            Debug.LogError("CameraController: player is not found.");
+            Debug.LogError("CameraController: _playerTransform is not found.");
         }
         Vector3 targetPostion = new Vector3(_target.position.x, _target.position.y , this.transform.position.z);
                                             

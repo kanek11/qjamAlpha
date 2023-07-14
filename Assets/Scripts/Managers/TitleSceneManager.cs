@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+using UnityEngine.UI;
+
 public class TitleSceneManager : MonoBehaviour
 {
+     
 
     //for UI of title scene
     public void StartGame()

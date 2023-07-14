@@ -112,6 +112,7 @@ GameObject:
   - component: {fileID: 2166552151306231106}
   - component: {fileID: 4691548598817382472}
   - component: {fileID: 9167703367320709156}
+  - component: {fileID: 6856029272401535256}
   m_Layer: 0
   m_Name: GreenRock6
   m_TagString: Item
@@ -126,16 +127,16 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3782055136752939968}
-  m_LocalRotation: {x: 0, y: -0, z: -0.0022640803, w: 0.99999744}
-  m_LocalPosition: {x: 1.324, y: 0.004, z: 0}
-  m_LocalScale: {x: 0.8683425, y: 0.8683425, z: 0.8683425}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.324, y: 0, z: 0}
+  m_LocalScale: {x: 1.2, y: 1.2, z: 1.2}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4635899212760108480}
   - {fileID: 3809514372646467210}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -0.259}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8778054642391487429
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -278,6 +279,102 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8d9616088d8be144958845de2cc638e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!82 &6856029272401535256
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3782055136752939968}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 8300000, guid: fab610dae805b234b99f71b68d782aa6, type: 3}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &8895540216575850065
 GameObject:
   m_ObjectHideFlags: 0
@@ -287,10 +384,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3809514372646467210}
-  - component: {fileID: 1972997471778403668}
   - component: {fileID: 3026318049211632043}
-  - component: {fileID: 3048328432039925306}
-  - component: {fileID: 6672313751156403731}
   m_Layer: 0
   m_Name: MossLayer
   m_TagString: Item
@@ -313,21 +407,6 @@ Transform:
   m_Father: {fileID: 9168711697165493425}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -0.259}
---- !u!114 &1972997471778403668
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8895540216575850065}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 74843b3f0347cbf4b90592e029e6dac2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _id: 2
-  _description: Normal Green Rock
-  _isWalkable: 1
 --- !u!212 &3026318049211632043
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -380,33 +459,3 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &3048328432039925306
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8895540216575850065}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e9e1b641c4b99e64caedf3d2407e0bc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  R_value: 10
-  G_value: 100
-  B_value: 10
-  R_boost: 1
-  G_boost: 1
-  B_boost: 1
---- !u!114 &6672313751156403731
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8895540216575850065}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b8d9616088d8be144958845de2cc638e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

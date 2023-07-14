@@ -22,5 +22,35 @@ public class TilemapPrefab : MonoBehaviour, ITilemapPrefab
     public bool IsWalkable { get => _isWalkable; set => _isWalkable = value; }
 
 
+    //depth management
+    private SpriteRenderer _spriteRenderer; 
+
+
+    void Awake()
+    {
+        _spriteRenderer = this.GetComponent<SpriteRenderer>(); 
+        if (_spriteRenderer == null)
+        {
+            Debug.Log("No SpriteRenderer found on " + gameObject.name);
+        }
+
+        _spriteRenderer.sortingOrder = (int)(transform.position.y * -1);
+
+
+    }
+
+
+    void Update()
+    {
+        _spriteRenderer.sortingOrder = (int)(transform.position.y * -1);  
+    }
+
+
+
+
+
+
+
+
 
 }

@@ -8,23 +8,29 @@ using UnityEngine;
 //this component is to be attached under item
 //in response to the player pick up event.
 
+//bug history:
+//don't use Event , that will cause all instance be triggered by one event.
+
 
 
 public class ItemPickUp : MonoBehaviour
 {
+    private AudioSource _itemGetAudio;
       
     void Start()
-    {
-        //register the event
-        //PlayerPickUp playerPickUp = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerPickUp>();
-        
-        //playerPickUp.OnPlayerPickUp.AddListener(OnItemPickUp);  
-
+    { 
+        _itemGetAudio = GetComponent<AudioSource>();
+        if (_itemGetAudio == null)
+        {
+            Debug.Log("No AudioSource found on " + gameObject.name);
+        }
     }
 
     public void OnItemPickUp()
     {
         Debug.Log("ItemPickUp: OnItemPickUp() called.");
+        //play sound
+        _itemGetAudio.Play();
 
         //destroy its children effect
         foreach (Transform child in transform)

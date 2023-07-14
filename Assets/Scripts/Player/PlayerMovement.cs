@@ -23,6 +23,7 @@ using UnityEngine;
 //within a single frame,  the snap is not so noticeable but might need to be improved in the future.
 
  
+//set _targetPosition to the current position at start; used for test movable tile.
 
 
 
@@ -42,7 +43,9 @@ public class PlayerMovement : MonoBehaviour
 
     Vector2 _targetPosition = Vector2.zero;
     private int _movingTiles = 0;
+
     private Vector2 _movingDirection = Vector2.zero;
+    public Vector2 MovingDirection { get { return _movingDirection; } set { _movingDirection = value; } }
 
 
     //--dependencies
@@ -50,10 +53,15 @@ public class PlayerMovement : MonoBehaviour
     private TilemapManager _tilemapManager;
 
 
+    private Animator _animator; 
+
+
 
     private void Awake()
     { 
         _tilemapManager = GameObject.Find("GameManager").GetComponent<TilemapManager>();
+
+        _animator = this.GetComponent<Animator>();
 
     }
 
@@ -62,6 +70,7 @@ public class PlayerMovement : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        _targetPosition = transform.position;
         
     }
 
@@ -75,20 +84,20 @@ public class PlayerMovement : MonoBehaviour
             if (_movingDirection != Vector2.zero && isWalkableTile(_movingDirection))
             {
 
-                _isMoving = true;  
-                _movingTiles = 1; 
-                _targetPosition = (Vector2)transform.position + _movingDirection; 
+                _isMoving = true;
+                _movingTiles = 1;
+                _targetPosition = (Vector2)transform.position + _movingDirection;
                 _elapsedTime = 0;
- 
+
             }
-             
+
         }
 
-        if(_isMoving)
+        if (_isMoving)
         {
 
             //in each frame update, move a little bit towards the destination.  return end for the current update.
-            if ( (_elapsedTime + Time.deltaTime) < (_movingTiles / _movingSpeed) )
+            if ((_elapsedTime + Time.deltaTime) < (_movingTiles / _movingSpeed))
             {
                 _elapsedTime += Time.deltaTime;
 
@@ -96,7 +105,9 @@ public class PlayerMovement : MonoBehaviour
 
             }
             //if still holding the button,  keep moving.
-            else if ( isWalkableTile(_movingDirection)  && (Input.GetButton("Horizontal") || Input.GetButton("Vertical")) )
+            else if (isWalkableTile(_movingDirection) &&
+                (_movingDirection == new Vector2(Input.GetAxisRaw("Horizontal"), 0) ||
+                 _movingDirection == new Vector2(0,Input.GetAxisRaw("Vertical")))   )
             {
                 //update and keep moving
                 _movingTiles++;
@@ -114,6 +125,9 @@ public class PlayerMovement : MonoBehaviour
 
         }
 
+
+        SetAnimatorParameters();
+
  
 
 
@@ -127,36 +141,11 @@ public class PlayerMovement : MonoBehaviour
         //======process input
         //priority : the last input direction.  implement by time stamp.
 
-        float lastHorizontalPressTime = 0;
-        float lastVerticalPressTime = 0;
 
-        if (Input.GetButtonDown("Horizontal"))
-        {
-            lastHorizontalPressTime = Time.time;
-        }
+        _movingDirection = new Vector3(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"), 0);
 
-        if (Input.GetButtonDown("Vertical"))
-        {
-            lastVerticalPressTime = Time.time;
-        }
-
-        if (Input.GetButtonDown("Horizontal") || Input.GetButtonDown("Vertical"))
-        {
-       
-            //get the last input direction
-            //this should return integer,  for example (1,0) if press right;
-            if (lastHorizontalPressTime > lastVerticalPressTime)
-            {
-                
-                _movingDirection = new Vector2(Input.GetAxisRaw("Horizontal"), 0);
-            }
-            else
-            { 
-                _movingDirection = new Vector2(0, Input.GetAxisRaw("Vertical"));
-            }
-
-
-        }
+        if (_movingDirection.x != 0) // Prevents diagonal movement
+            _movingDirection.y = 0;
 
     }
 
@@ -189,8 +178,27 @@ public class PlayerMovement : MonoBehaviour
         }
 
         return true;
-         
+
     }
 
- 
+
+    void SetAnimatorParameters()
+    {
+        if(_animator == null)
+        {
+            _animator = GetComponent<Animator>();
+        }
+
+        if(_isMoving)
+        {
+            _animator.SetBool("IsMoving", true);
+        }
+        else
+        {
+            _animator.SetBool("IsMoving", false);
+        }
+
+
+    }
+
 }
