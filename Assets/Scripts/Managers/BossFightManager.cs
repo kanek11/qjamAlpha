@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 
 
-enum Rating { F, E, D, C, B, A, S, SS };
+enum Rating { F, A, S, SS };
 
 
 
@@ -54,9 +54,7 @@ public class BossFightManager : MonoBehaviour
 
     private bool _hasReachedTimeLimit = false;
 
-
-
-
+     
 
 
     // Start is called before the first frame update
@@ -90,14 +88,12 @@ public class BossFightManager : MonoBehaviour
        
         if (Potion.Count == 0)
         {
-            Debug.Log("Bossfight: Potion is not set, initialized");
-            Potion.Add(Attributes.R, 500);
-            Potion.Add(Attributes.G, 500);
-            Potion.Add(Attributes.B, 500);
+            Debug.Log("Bossfight: Potion is not set, initialized by default ");
+            Potion.Add(Attributes.R, 1200);
+            Potion.Add(Attributes.G, 1000);
+            Potion.Add(Attributes.B, 1000);
         } 
-
-
-
+         
         _audioSources = GetComponents<AudioSource>();
         
     }
@@ -105,38 +101,46 @@ public class BossFightManager : MonoBehaviour
 
     void Start()
     {
-        CalculateDamage();
+        StartCoroutine(DisplayPotion());
+
+
+
     }
      
 
     // Update is called once per frame
     void Update()
+    { 
+
+    }
+     
+    IEnumerator EnterCountDown()
     {
-        if(_hasReachedTimeLimit)
+        while (!_hasReachedTimeLimit)
         {
-            return;
+
+            //if time is up, game over
+            _elapsedTime += Time.deltaTime;
+            if (_elapsedTime >= _timeLimit)
+            {
+                EnterRateScore();
+                _hasReachedTimeLimit = true;
+            }
+
+            //if input enter, increment buttonPressCount
+            if (Input.GetKeyDown(KeyCode.Return))
+            {
+                _buttonPressCount++;
+                _currentDamage = _initialDamage * (0.8f + _buttonPressCount * 0.02f);
+                _currentEnemy.GetComponent<EnemyHealth>().SetEnemyHealth(_currentDamage);
+
+                Debug.Log("BossFight: button pressed, count:" + _buttonPressCount);
+            }
+
+            yield return null;
         }
 
-        //if time is up, game over
-        _elapsedTime += Time.deltaTime; 
-        if (_elapsedTime >= _timeLimit)
-        {
-            RateScore();
-            _hasReachedTimeLimit = true;
-        }
-         
-        //if input enter, increment buttonPressCount
-        if (Input.GetKeyDown(KeyCode.Return))
-        { 
-            _buttonPressCount++;
-            _currentDamage = _initialDamage * (0.8f + _buttonPressCount * 0.02f);
-            _currentEnemy.GetComponent<EnemyHealth>().SetEnemyHealth(_currentDamage);
-
-
-            Debug.Log("BossFight: button pressed, count:" + _buttonPressCount);
-        }
-
-
+       
     }
 
 
@@ -163,7 +167,7 @@ public class BossFightManager : MonoBehaviour
 
 
 
-    void RateScore()
+    void EnterRateScore()
     {
         //set the fightCanvas to be invisible
         CanvasGroup FightCanvasGroup =  GameObject.Find("FightCanvas").GetComponent<CanvasGroup>();
@@ -192,12 +196,10 @@ public class BossFightManager : MonoBehaviour
         if (enemyHealth <= 0)
         {
             // Calculate the rating based on excess damage, clamp it within the valid range.
-            int excessDamage = Mathf.Clamp((int)(_currentDamage - enemyHealth) / 100, 0, 7);
+            int excessDamage = Mathf.Clamp((int)(_currentDamage - enemyHealth) / 300, 0, 3);
             rating = (Rating)excessDamage;
 
             //set the score image
-           
-
         }
 
         ScoreImage.sprite = ScoreSprites[(int)rating];
@@ -210,23 +212,19 @@ public class BossFightManager : MonoBehaviour
         //Switch case: play 1 if rating is F, 1 if rating is E, D, 2 if A,B,C, 3 if rating is S or SS
         switch (rating)
         {
-            case Rating.F:
-            case Rating.E:
-            case Rating.D:
+            case Rating.F: 
                 _audioSources[1].Play();
-                break;
-            case Rating.C:
-            case Rating.B:
+                break; 
             case Rating.A:
                 _audioSources[2].Play();
                 break;
             case Rating.S:
+                _audioSources[3].Play();
+                break;
             case Rating.SS:
                 _audioSources[3].Play();
                 break;
         }
-
-
          
 
     }
@@ -247,5 +245,29 @@ public class BossFightManager : MonoBehaviour
         SceneManager.LoadScene("Title");  
     }
 
+
+    private IEnumerator DisplayPotion()
+    {
+        yield return new WaitForSeconds(3f);
+
+
+
+        CanvasGroup RateScoreCanvasGroup = GameObject.Find("PotionCanvas").GetComponent<CanvasGroup>();
+        RateScoreCanvasGroup.alpha = 0;
+        RateScoreCanvasGroup.interactable = false;
+        RateScoreCanvasGroup.blocksRaycasts = false;
+
+
+        // Code here will run after 3 seconds
+        CanvasGroup FightCanvasGroup = GameObject.Find("FightCanvas").GetComponent<CanvasGroup>();
+        FightCanvasGroup.alpha = 1;
+        FightCanvasGroup.interactable = true;
+        FightCanvasGroup.blocksRaycasts = true;
+
+
+        CalculateDamage();
+        StartCoroutine(EnterCountDown());
+
+    }
 
 }

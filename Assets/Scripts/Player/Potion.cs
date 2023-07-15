@@ -36,7 +36,7 @@ public class Potion : MonoBehaviour
         _potionAttributes[Attributes.G] *= item.G_boost;
         _potionAttributes[Attributes.B] *= item.B_boost;
 
-        Debug.Log("Potion updated " + "R: " + _potionAttributes[Attributes.R] + "G: " + _potionAttributes[Attributes.G] + "B: " + _potionAttributes[Attributes.B]);
+        Debug.Log("Potion updated " + "_r: " + _potionAttributes[Attributes.R] + "_g: " + _potionAttributes[Attributes.G] + "_b: " + _potionAttributes[Attributes.B]);
 
         //update the potion.
         OnPotionUpdate?.Invoke();

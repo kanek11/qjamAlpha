@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using TMPro;
-using UnityEngine.UI;
-using UnityEngine.Events;
-using UnityEngine.SocialPlatforms;
+using UnityEngine.UI; 
 
-public class PotionHUD : MonoBehaviour
+public class PotionHUDLevel : MonoBehaviour
 {  
     private Potion _potion; 
 
@@ -58,9 +56,6 @@ public class PotionHUD : MonoBehaviour
         B = _potion.PotionAttributes[Attributes.B]; 
 
         UpdatePotionHUD();
-
-    
-
          
     }
 
@@ -94,9 +89,7 @@ public class PotionHUD : MonoBehaviour
 
         }
 
-
-
-
+         
         //update the texts
         _potionAttributesText.transform.Find("PotionRText").GetComponent<TextMeshProUGUI>().text = R.ToString();
         _potionAttributesText.transform.Find("PotionGText").GetComponent<TextMeshProUGUI>().text = G.ToString();

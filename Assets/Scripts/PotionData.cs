@@ -28,9 +28,9 @@ public class PotionData : MonoBehaviour
             GlobalState.PotionAttributes.Add(Attributes.B, 10);
 
             Debug.Log("PotionData: Potion initialized without _playerTransform " + 
-                "R: " + GlobalState.PotionAttributes[Attributes.R] + 
-                "G: " + GlobalState.PotionAttributes[Attributes.G] + 
-                "B: " + GlobalState.PotionAttributes[Attributes.B]);
+                "_r: " + GlobalState.PotionAttributes[Attributes.R] + 
+                "_g: " + GlobalState.PotionAttributes[Attributes.G] + 
+                "_b: " + GlobalState.PotionAttributes[Attributes.B]);
 
         }
         else

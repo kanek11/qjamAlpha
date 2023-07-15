@@ -15,7 +15,12 @@ public class ProgressBar : MonoBehaviour
 
     private float _progress;
 
-    //on float point
+    [SerializeField]
+    private int _maxScoreHitNumber =20;
+    public int MaxScoreHitNumber
+    { get { return _maxScoreHitNumber; } set { _maxScoreHitNumber = value; } }
+
+   
 
     void Start()
     {
@@ -28,37 +33,43 @@ public class ProgressBar : MonoBehaviour
             Debug.Log("ProgressBar: BossFightManager not found!");
         }
 
-        target = _bossFightManager.CurrentEnemy;
+        /*  target = _bossFightManager.CurrentEnemy;
 
         target.GetComponent<EnemyHealth>().OnHealthChanged.AddListener(SetProgressBar);
         if (target == null)
         {
             Debug.Log("ProgressBar: Target not found!");
-        }
+        }*/
       
 
     }
 
-    public void SetProgressBar()
+
+    private void Update()
     {
-        _progress = 1 - target.GetComponent<EnemyHealth>().Health / target.GetComponent<EnemyHealth>().MaxHealth;
-        if(_progress < 0)
-        {
-            _progress = 0;
-            Debug.Log("ProgressBar: Progress is below 0!");
-        }
-        if(_progress > 1)
-        {
-            _progress = 1;
-            Debug.Log("ProgressBar: Progress is over 1!");
-        }
-        slider.value = _progress;
+        _progress = (float)_bossFightManager.ButtonPressCount / _maxScoreHitNumber;
 
-        Debug.Log("ProgressBar: Progress changed: " + _progress);
-
-
-
+        slider.value = _progress; 
 
     }
+
+    /*  public void SetProgressBar()
+      {
+          _progress = 1 - target.GetComponent<EnemyHealth>().Health / target.GetComponent<EnemyHealth>().MaxHealth;
+          if(_progress < 0)
+          {
+              _progress = 0;
+              Debug.Log("ProgressBar: Progress is below 0!");
+          }
+          if(_progress > 1)
+          {
+              _progress = 1;
+              Debug.Log("ProgressBar: Progress is over 1!");
+          }
+          slider.value = _progress;
+
+          Debug.Log("ProgressBar: Progress changed: " + _progress); 
+
+      }*/
 
 }
