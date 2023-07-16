@@ -146,7 +146,6 @@ public class LevelsManager  : MonoBehaviour
        
         _tilemapManager.SetupTilemap(levelData);
 
-
         _playerManager.PlayerSpawnPoint = _tilemapManager.PlayerSpawnPoint;
         _playerManager.PlayerInstance = Instantiate(_playerPrefab, _tilemapManager.PlayerSpawnPoint, Quaternion.identity);
         _playerManager.SetupPlayer();

@@ -68,7 +68,8 @@ public class PlayerPickUp : MonoBehaviour
         void Update()
         {
             //if the item is available, press enter to pick up the item.
-            if (itemToPickUp != null && Input.GetKeyDown(KeyCode.Return))
+            //pick up if hit enter or space.
+            if (itemToPickUp != null && Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space))
             {
             
                  //caution: make sure add before destroy.

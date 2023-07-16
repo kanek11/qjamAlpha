@@ -127,8 +127,8 @@ public class BossFightManager : MonoBehaviour
                 _hasReachedTimeLimit = true;
             }
 
-            //if input enter, increment buttonPressCount
-            if (Input.GetKeyDown(KeyCode.Return))
+            //if input enter or space,  increment buttonPressCount
+            if ( Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space) )
             {
                 _buttonPressCount++;
                 _currentDamage = _initialDamage * (0.8f + _buttonPressCount * 0.02f);
@@ -189,15 +189,17 @@ public class BossFightManager : MonoBehaviour
 
         Rating rating = Rating.F;
 
-         float enemyHealth = _currentEnemy.GetComponent<EnemyHealth>().Health;
+        float enemyHealth = _currentEnemy.GetComponent<EnemyHealth>().Health;
          
         //if success
 
         if (enemyHealth <= 0)
         {
             // Calculate the rating based on excess damage, clamp it within the valid range.
-            int excessDamage = Mathf.Clamp((int)(_currentDamage - enemyHealth) / 300, 0, 3);
-            rating = (Rating)excessDamage;
+            int excessDamage = Mathf.Clamp((int)(-enemyHealth) / 200, 0, 3);
+            rating = (Rating)(excessDamage);
+
+            Debug.Log("current health "+ enemyHealth + " rating: " + (int)rating);
 
             //set the score image
         }

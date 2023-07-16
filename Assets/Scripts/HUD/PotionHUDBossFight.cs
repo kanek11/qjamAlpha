@@ -59,7 +59,6 @@ public class PotionHUDBossFight : MonoBehaviour
             //set the alpha to be max 
             _potionFluidImage.GetComponent<Image>().color = new Color32((byte)r, (byte)g, (byte)b, (byte)max);
  
-
         }
          
       

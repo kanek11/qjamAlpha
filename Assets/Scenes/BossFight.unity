@@ -502,7 +502,7 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 1
   m_WholeNumbers: 0
-  m_Value: 0
+  m_Value: 1
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1131,8 +1131,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 13.45697, y: -1.762001}
-  m_SizeDelta: {x: -98.57, y: -88.765}
+  m_AnchoredPosition: {x: 10.2063, y: -3.0346}
+  m_SizeDelta: {x: -92.3264, y: -91.3101}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1244858811
 MonoBehaviour:
@@ -1216,7 +1216,7 @@ MonoBehaviour:
   - {fileID: 2230416106941322555, guid: 994c58d422e65194da91ab4a4cc1703d, type: 3}
   - {fileID: 2230416106941322555, guid: 2b531ad95877762498899a513543bd3e, type: 3}
   EnemyImage: {fileID: 1826883566}
-  _timeLimit: 5
+  _timeLimit: 10
 --- !u!4 &1407526603
 Transform:
   m_ObjectHideFlags: 0

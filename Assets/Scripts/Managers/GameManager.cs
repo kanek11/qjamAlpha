@@ -161,9 +161,7 @@ public class GameManager : MonoBehaviour
     }
  
      private IEnumerator StartCountDown()
-     {
-        //
-
+     { 
 
         //drive UI and audio
         //play audio
@@ -181,6 +179,7 @@ public class GameManager : MonoBehaviour
 
         //enable player movement
         _playerManager.EnablePlayerControl();
+
 
         //relay audio
         _audioSources[1].Stop();

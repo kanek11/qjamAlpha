@@ -16,7 +16,7 @@ public class ProgressBar : MonoBehaviour
     private float _progress;
 
     [SerializeField]
-    private int _maxScoreHitNumber =20;
+    private int _maxScoreHitNumber =30;
     public int MaxScoreHitNumber
     { get { return _maxScoreHitNumber; } set { _maxScoreHitNumber = value; } }
 

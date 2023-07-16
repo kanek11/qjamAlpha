@@ -75,7 +75,7 @@ public class PotionHUDLevel : MonoBehaviour
         g = Mathf.RoundToInt((float)G / max * 255);
         b = Mathf.RoundToInt((float)B / max * 255);
 
-        if (max >= 255)
+        if (max >= 510)
         {
             //update the flask imageUI
             _potionFluidImage.GetComponent<Image>().color = new Color32((byte)r, (byte)g, (byte)b, 255);
@@ -84,7 +84,7 @@ public class PotionHUDLevel : MonoBehaviour
         else
         {
             //set the alpha to be max 
-            _potionFluidImage.GetComponent<Image>().color = new Color32((byte)r, (byte)g, (byte)b, (byte)max);
+            _potionFluidImage.GetComponent<Image>().color = new Color32((byte)r, (byte)g, (byte)b, (byte)(max/2));
 
 
         }

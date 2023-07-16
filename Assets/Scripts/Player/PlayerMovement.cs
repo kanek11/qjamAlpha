@@ -61,17 +61,15 @@ public class PlayerMovement : MonoBehaviour
     { 
         _tilemapManager = GameObject.Find("GameManager").GetComponent<TilemapManager>();
 
-        _animator = this.GetComponent<Animator>();
+        _animator = this.GetComponent<Animator>(); 
+
+        _targetPosition = transform.position;
 
     }
-
-     
 
     // Start is called before the first frame update
     void Start()
     {
-        _targetPosition = transform.position;
-        
     }
 
     // Update is called once per frame
@@ -79,7 +77,12 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!_isMoving)
         {
-            ProcessInput();
+            //ProcessInput();
+            _movingDirection = new Vector3(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"), 0);
+
+            if (_movingDirection.x != 0) // Prevents diagonal movement
+                _movingDirection.y = 0;
+
 
             if (_movingDirection != Vector2.zero && isWalkableTile(_movingDirection))
             {
@@ -89,10 +92,13 @@ public class PlayerMovement : MonoBehaviour
                 _targetPosition = (Vector2)transform.position + _movingDirection;
                 _elapsedTime = 0;
 
+                Debug.Log("start moving");
+
             }
 
         }
 
+        else
         if (_isMoving)
         {
 
@@ -101,7 +107,21 @@ public class PlayerMovement : MonoBehaviour
             {
                 _elapsedTime += Time.deltaTime;
 
-                transform.position += (Vector3)_movingDirection * _movingSpeed * Time.deltaTime;
+
+
+                Vector3 moveDistance = (Vector3)_movingDirection * _movingSpeed * Time.deltaTime;
+      
+
+                Debug.Log("move distance: " + moveDistance);
+                Debug.Log("elapsed time: " + _elapsedTime);
+                Debug.Log("timestep: " + Time.deltaTime);
+                Debug.Log("MovingDirection" + _movingDirection);
+                Debug.Log("MovingSpeed" + _movingSpeed);
+                Debug.Log("OriginalPos" + transform.position);
+
+                transform.position += moveDistance;
+
+                Debug.Log("NewPos" + transform.position);
 
             }
             //if still holding the button,  keep moving.
@@ -113,6 +133,8 @@ public class PlayerMovement : MonoBehaviour
                 _movingTiles++;
                 _targetPosition += _movingDirection;
 
+                Debug.Log("trigger keep moving to next tile");
+
             }
             else
             {
@@ -121,15 +143,18 @@ public class PlayerMovement : MonoBehaviour
                 _elapsedTime = 0;
                 _movingTiles = 0;
                 _movingDirection = Vector2.zero; 
+                Debug.Log("stop moving");
             }
 
         }
 
 
+        Debug.Log("playerPosition" + transform.position);
+
+        Debug.Log("PlayerMovement: movingTiles" + _movingTiles);
+
         SetAnimatorParameters();
-
- 
-
+         
 
     }
  
@@ -140,13 +165,7 @@ public class PlayerMovement : MonoBehaviour
 
         //======process input
         //priority : the last input direction.  implement by time stamp.
-
-
-        _movingDirection = new Vector3(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"), 0);
-
-        if (_movingDirection.x != 0) // Prevents diagonal movement
-            _movingDirection.y = 0;
-
+         
     }
 
   

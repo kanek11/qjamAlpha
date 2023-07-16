@@ -43,6 +43,7 @@ public class PlayerManager
      public void DisablePlayerControl()
      {
         _playerMovement.enabled = false;
+
      }
 
 }
